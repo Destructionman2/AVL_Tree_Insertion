@@ -9,6 +9,7 @@ class Node
 public:
     int key;
     int height;
+    int balance;
     Node* left;
     Node* right;
 
@@ -25,6 +26,7 @@ public:
 
     int getHeight(Node* node) { return height; };
     int getKey(Node* node) { return key; };
+    int getBalance(Node* node) { return balance; };
 };
 
 Node* Node::rebalance(Node* node)
