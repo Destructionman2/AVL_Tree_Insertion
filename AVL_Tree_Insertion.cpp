@@ -2,19 +2,58 @@
 //
 
 #include <iostream>
+using namespace std;
+
+class Node
+{
+public:
+    int key;
+    int height;
+    Node* left;
+    Node* right;
+
+    Node(int nodeKey)
+    {
+        key = nodeKey;
+        left = nullptr;
+        right = nullptr;
+    }
+    Node* rebalance(Node* node);
+    Node* insert(Node* node, int key);
+    Node* leftRotate(Node* node);
+    Node* rightRotate(Node* node);
+
+    int getHeight(Node* node) { return height; };
+    int getKey(Node* node) { return key; };
+};
+
+Node* Node::rebalance(Node* node)
+{
+    return nullptr;
+}
+
+Node* Node::insert(Node* node, int key)
+{
+    return nullptr;
+}
+
+Node* Node::leftRotate(Node* node)
+{
+    return nullptr;
+}
+
+Node* Node::rightRotate(Node* node)
+{
+    return nullptr;
+}
 
 int main()
 {
-    std::cout << "Hello World!\n";
+    // The goal is to implement a binary tree through a input txt file
+    // and balancing it everytime it becomes unbalanced through AVL method
+    //
+    // Finally, we insert the final balanced tree to a output txt file in the
+    // directory of this depository
+    
+    return 0;
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
