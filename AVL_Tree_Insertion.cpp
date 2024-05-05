@@ -29,7 +29,22 @@ public:
 
 Node* Node::rebalance(Node* node)
 {
-    return nullptr;
+    node->height = max(getHeight(node->left), getHeight(node->right)) + 1;
+    int balance = getBalance(node);  //node->left - node->right
+
+    if (balance == 2 && getBalance(node->left) == 1) return rightRotate(node);              //left outward imbalance
+    else if (balance == 2 && getBalance(node->left) == -1)                                  //left inward imbalance
+    {
+        node->left = leftRotate(node->left);
+        return rightRotate(node);
+    }
+    else if (balance == -2 && getBalance(node->right) == -1) return leftRotate(node);       // right outward imbalance
+    else if (balance == -2 && getBalance(node->right) == 1)                                 //right inward imbalance
+    {
+        node->right = rightRotate(node->right);
+        return leftRotate(node);
+    }
+    else return node;
 }
 
 Node* Node::insert(Node* node, int key)
