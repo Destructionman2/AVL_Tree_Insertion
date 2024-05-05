@@ -9,12 +9,15 @@ class Node
 public:
     int key;
     int height;
+    int balance;
     Node* left;
     Node* right;
 
     Node(int nodeKey)
     {
         key = nodeKey;
+        height = 0;
+        balance = 0;
         left = nullptr;
         right = nullptr;
     }
@@ -25,6 +28,7 @@ public:
 
     int getHeight(Node* node) { return height; };
     int getKey(Node* node) { return key; };
+    int getBalance(Node* node) { return balance; };
 };
 
 Node* Node::rebalance(Node* node)
@@ -49,15 +53,25 @@ Node* Node::rebalance(Node* node)
 
 Node* Node::insert(Node* node, int key)
 {
-    return nullptr;
+    //this is the non-tail recursive process due to rebalance
+    if (node == nullptr)
+    {
+        Node* newNode = new Node(key);
+        return newNode;
+    }
+    if (key < node->key) { node->left = insert(node->left, key); }
+    else node->right = insert(node->right, key);
+    node = rebalance(node); //update heights and rebalance
+    return node;
 }
 
-Node* Node::leftRotate(Node* node)
+Node* Node::leftRotate(Node* x)
 {
-    return nullptr;
+    Node *y = x->right;
+    
 }
 
-Node* Node::rightRotate(Node* node)
+Node* Node::rightRotate(Node* x)
 {
     return nullptr;
 }
