@@ -2,14 +2,15 @@
 //
 
 #include <iostream>
+#include <fstream>
 using namespace std;
 
-class Node
+struct Node
 {
-public:
     int key;
     int height;
     int balance;
+    Node* next;
     Node* left;
     Node* right;
 
@@ -18,40 +19,36 @@ public:
         key = nodeKey;
         height = 0;
         balance = 0;
+        next = nullptr;
         left = nullptr;
         right = nullptr;
-    }
-    Node* rebalance(Node* node);
-    Node* insert(Node* node, int key);
-    Node* leftRotate(Node* node);
-    Node* rightRotate(Node* node);
-
-    int getHeight(Node* node) { return height; };
-    int getKey(Node* node) { return key; };
-    int getBalance(Node* node) { return balance; };
+    };
 };
 
-Node* Node::rebalance(Node* node)
+int getHeight(Node* node) { return node ? node->height : 0; };
+int getBalance(Node* node) { return node ? getHeight(node->left) - getHeight(node->right) : 0; };
+
+Node* rebalance(Node* node)
 {
     node->height = max(getHeight(node->left), getHeight(node->right)) + 1;
     int balance = getBalance(node);  //node->left - node->right
 
-    if (balance == 2 && getBalance(node->left) == 1) return rightRotate(node);              //left outward imbalance
+    if (balance == 2 && getBalance(node->left) == 1) { return rightRotate(node); }          //left outward imbalance
     else if (balance == 2 && getBalance(node->left) == -1)                                  //left inward imbalance
     {
         node->left = leftRotate(node->left);
         return rightRotate(node);
     }
-    else if (balance == -2 && getBalance(node->right) == -1) return leftRotate(node);       // right outward imbalance
+    else if (balance == -2 && getBalance(node->right) == -1) { return leftRotate(node); }   // right outward imbalance
     else if (balance == -2 && getBalance(node->right) == 1)                                 //right inward imbalance
     {
         node->right = rightRotate(node->right);
         return leftRotate(node);
     }
-    else return node;
+    else { return node; }
 }
 
-Node* Node::insert(Node* node, int key)
+Node* insert(Node* node, int key)
 {
     //this is the non-tail recursive process due to rebalance
     if (node == nullptr)
@@ -60,21 +57,77 @@ Node* Node::insert(Node* node, int key)
         return newNode;
     }
     if (key < node->key) { node->left = insert(node->left, key); }
-    else node->right = insert(node->right, key);
+    else { node->right = insert(node->right, key); }
     node = rebalance(node); //update heights and rebalance
     return node;
 }
 
-Node* Node::leftRotate(Node* x)
+Node* leftRotate(Node* x)
 {
     Node *y = x->right;
+    x->right = y->left;
+    y->left = x;
+
+    //Updating the heights
+    x->height = max(getHeight(x->left), getHeight(x->right)) + 1;
+    y->height = max(getHeight(y->left), getHeight(y->right)) + 1;
+
+    return y;
     
 }
 
-Node* Node::rightRotate(Node* x)
+Node* rightRotate(Node* x)
 {
-    return nullptr;
+    Node* y = x->left;
+    x->left = y->right;
+    y->right = x;
+
+    //Updating the heights
+    x->height = max(getHeight(x->left), getHeight(x->right)) + 1;
+    y->height = max(getHeight(y->left), getHeight(y->right)) + 1;
+
+    return y;
 }
+
+class Queue
+{
+private:
+    struct QueueNode
+    {
+        Node* data;
+        QueueNode* next;
+        QueueNode(Node* node) { data = node; next = nullptr; }
+    };
+    QueueNode* front;
+    QueueNode* rear;
+public:
+    Queue() { front = nullptr; rear = nullptr; }
+    void enqueue(Node* node)
+    {
+        QueueNode* newNode = new QueueNode(node);
+        if (rear == nullptr)
+        {
+            front = newNode;
+            rear = newNode;
+        }
+        else
+        {
+            rear->next = newNode;
+            rear = newNode;
+        }
+    }
+    Node* dequeue()
+    {
+        if (front == nullptr) {return nullptr;}
+        QueueNode* temp = front;
+        Node* node = front->data;
+        front = front->next;
+        if (front == nullptr) {rear = nullptr;}
+        delete temp;
+        return node;
+    }
+    bool isEmpty() { return front == nullptr; }
+};
 
 int main()
 {
@@ -82,7 +135,31 @@ int main()
     // and balancing it everytime it becomes unbalanced through AVL method
     //
     // Finally, we insert the final balanced tree to a output txt file in the
-    // directory of this depository
-    
+    // directory of this depository through displaying each level on a seperate
+    // line using the two queue display method
+    ifstream in;
+    ofstream out;
+    int temp;
+    Node* root = nullptr;
+    Queue queue;
+
+    in.open("input.txt");
+    if (!in.is_open())
+    {
+        cout << "ERROR: input file could not be opened!" << endl;
+        return 0;
+    }
+    while (in >> temp)
+    {
+        root = insert(root, temp);
+    }
+
+    queue.enqueue(root);
+    while (!queue.isEmpty())
+    {
+        int levelSize = queue.size()
+    }
+
+
     return 0;
 }
