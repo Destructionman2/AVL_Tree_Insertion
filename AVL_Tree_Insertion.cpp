@@ -4,6 +4,59 @@
 #include <iostream>
 using namespace std;
 
+class LinkedList
+{
+private:
+    Node* head;
+    Node* tail;
+public:
+    LinkedList()
+    {
+        head = nullptr;
+        tail = nullptr;
+    }
+    void Append(Node* newNode)
+    {
+        if (head)
+        {
+            tail->next = newNode;
+            tail = newNode;
+        }
+        else
+        {
+            head = newNode;
+            tail = newNode;
+        }
+    };
+    void RemoveAfter()
+    {
+        Node* removeNode = head;
+        head = head->next;
+        delete removeNode;
+        if (head == nullptr)
+        {
+            tail = nullptr;
+        }
+    };
+    Node* getHead() { return head; };
+};
+
+class Queue
+{
+private:
+    LinkedList linkList;
+public:
+    Queue() {}
+    void Enqueue(Node* newNode) { linkedList.Append(newNode); }
+    int Dequeue()
+    {
+        Node* dequeuedNode = LinkedList.getHead();
+        int nodeKey = dequeuedNode->key;
+        linkList.RemoveAfter();
+        return nodeKey;
+    }
+};
+
 class Node
 {
 public:
@@ -12,12 +65,14 @@ public:
     int balance;
     Node* left;
     Node* right;
+    Node* next;  //this is for the queue class
 
     Node(int nodeKey)
     {
         key = nodeKey;
         left = nullptr;
         right = nullptr;
+        next = nullptr;
     }
     Node* rebalance(Node* node);
     Node* insert(Node* node, int key);
