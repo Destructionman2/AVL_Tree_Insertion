@@ -25,8 +25,79 @@ struct Node
     };
 };
 
+class Queue
+{
+private:
+    struct QueueNode
+    {
+        Node* data;
+        QueueNode* next;
+        QueueNode(Node* node) { data = node; next = nullptr; }
+    };
+    QueueNode* front;
+    QueueNode* rear;
+    int queueSize;
+public:
+    Queue() { front = nullptr; rear = nullptr; queueSize = 0; }
+    void enqueue(Node* node)
+    {
+        QueueNode* newNode = new QueueNode(node);
+        if (rear == nullptr)
+        {
+            front = newNode;
+            rear = newNode;
+        }
+        else
+        {
+            rear->next = newNode;
+            rear = newNode;
+        }
+        queueSize++;
+    }
+    Node* dequeue()
+    {
+        if (front == nullptr) { return nullptr; }
+        QueueNode* temp = front;
+        Node* node = front->data;
+        front = front->next;
+        if (front == nullptr) { rear = nullptr; }
+        delete temp;
+        queueSize--;
+        return node;
+    }
+    bool isEmpty() { return front == nullptr; }
+    int size() { return queueSize; }
+};
+
 int getHeight(Node* node) { return node ? node->height : 0; };
 int getBalance(Node* node) { return node ? getHeight(node->left) - getHeight(node->right) : 0; };
+
+Node* leftRotate(Node* x)
+{
+    Node* y = x->right;
+    x->right = y->left;
+    y->left = x;
+
+    //Updating the heights
+    x->height = max(getHeight(x->left), getHeight(x->right)) + 1;
+    y->height = max(getHeight(y->left), getHeight(y->right)) + 1;
+
+    return y;
+
+}
+
+Node* rightRotate(Node* x)
+{
+    Node* y = x->left;
+    x->left = y->right;
+    y->right = x;
+
+    //Updating the heights
+    x->height = max(getHeight(x->left), getHeight(x->right)) + 1;
+    y->height = max(getHeight(y->left), getHeight(y->right)) + 1;
+
+    return y;
+}
 
 Node* rebalance(Node* node)
 {
@@ -57,77 +128,10 @@ Node* insert(Node* node, int key)
         return newNode;
     }
     if (key < node->key) { node->left = insert(node->left, key); }
-    else { node->right = insert(node->right, key); }
+    else if (key > node->key) { node->right = insert(node->right, key); }
+    else { return node; }
     node = rebalance(node); //update heights and rebalance
-    return node;
 }
-
-Node* leftRotate(Node* x)
-{
-    Node *y = x->right;
-    x->right = y->left;
-    y->left = x;
-
-    //Updating the heights
-    x->height = max(getHeight(x->left), getHeight(x->right)) + 1;
-    y->height = max(getHeight(y->left), getHeight(y->right)) + 1;
-
-    return y;
-    
-}
-
-Node* rightRotate(Node* x)
-{
-    Node* y = x->left;
-    x->left = y->right;
-    y->right = x;
-
-    //Updating the heights
-    x->height = max(getHeight(x->left), getHeight(x->right)) + 1;
-    y->height = max(getHeight(y->left), getHeight(y->right)) + 1;
-
-    return y;
-}
-
-class Queue
-{
-private:
-    struct QueueNode
-    {
-        Node* data;
-        QueueNode* next;
-        QueueNode(Node* node) { data = node; next = nullptr; }
-    };
-    QueueNode* front;
-    QueueNode* rear;
-public:
-    Queue() { front = nullptr; rear = nullptr; }
-    void enqueue(Node* node)
-    {
-        QueueNode* newNode = new QueueNode(node);
-        if (rear == nullptr)
-        {
-            front = newNode;
-            rear = newNode;
-        }
-        else
-        {
-            rear->next = newNode;
-            rear = newNode;
-        }
-    }
-    Node* dequeue()
-    {
-        if (front == nullptr) {return nullptr;}
-        QueueNode* temp = front;
-        Node* node = front->data;
-        front = front->next;
-        if (front == nullptr) {rear = nullptr;}
-        delete temp;
-        return node;
-    }
-    bool isEmpty() { return front == nullptr; }
-};
 
 int main()
 {
@@ -144,7 +148,7 @@ int main()
     Queue queue;
 
     in.open("input.txt");
-    if (!in.is_open())
+    if (!(in.is_open()))
     {
         cout << "ERROR: input file could not be opened!" << endl;
         return 0;
@@ -154,12 +158,31 @@ int main()
         root = insert(root, temp);
     }
 
-    queue.enqueue(root);
-    while (!queue.isEmpty())
+    // Printing out levels of Tree in output file
+    out.open("output.txt");
+    if (root == nullptr)
     {
-        int levelSize = queue.size()
+        return 0;
+    }
+    queue.enqueue(root);
+    while (!(queue.isEmpty()))
+    {
+        int levelSize = queue.size();
+        for (int i = 0; i < levelSize; i++)
+        {
+            Node* node = queue.dequeue();
+            if (node != nullptr)
+            {
+                out << node->key << " ";
+                queue.enqueue(node->left);
+                queue.enqueue(node->right);
+            }
+        }
+        out << endl;
     }
 
+    in.close();
+    out.close();
 
     return 0;
 }
